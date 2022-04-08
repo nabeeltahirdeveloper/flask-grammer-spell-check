@@ -1,6 +1,6 @@
 # Imports necessary libraries
-from nis import match
 from flask import Flask , render_template, request
+from numpy import character
 import requests
 import json
 
@@ -55,8 +55,11 @@ def homePost():
             my_new_text[start_positions[m]] = my_corrections[m]
             if (i>start_positions[m] and i<end_positions[m]):
                 my_new_text[i]=""
-    print(my_new_text)
+                
+            
     my_new_text = "".join(my_new_text)
-    return render_template('index.html', Results=my_new_text)
+    words=len(my_new_text.split(" "))
+    characters=len(my_new_text)
+    return render_template('index.html', Results=my_new_text, words=words, characters=characters, my_mistakes=my_mistakes, my_corrections=my_corrections)
 if __name__ == '__main__':
     app.run(debug=True)
