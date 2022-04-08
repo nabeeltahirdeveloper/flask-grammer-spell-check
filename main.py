@@ -61,5 +61,44 @@ def homePost():
     words=len(my_new_text.split(" "))
     characters=len(my_new_text)
     return render_template('index.html', Results=my_new_text, words=words, characters=characters, my_mistakes=my_mistakes, my_corrections=my_corrections)
+
+@app.route('/api', methods=['POST'])
+def homePostAPI():
+    text=request.form['text']
+    
+    # get the matches
+    matches = toolRequest(text)
+    my_mistakes = []
+    my_corrections = []
+    start_positions = []
+    end_positions = []
+    matches=matches['matches']
+    for rules in matches:
+            
+            print("rules=====",type(rules))
+            if len(rules["replacements"])>0:
+                start_positions.append(rules['offset'])
+                end_positions.append(rules['length']+rules['offset'])
+                my_mistakes.append(text[rules['offset']:rules['length']+rules['offset']])
+                my_corrections.append(rules['replacements'][0]['value'])
+        
+    
+        
+    my_new_text = list(text)
+    
+    
+    for m in range(len(start_positions)):
+        for i in range(len(text)):
+            my_new_text[start_positions[m]] = my_corrections[m]
+            if (i>start_positions[m] and i<end_positions[m]):
+                my_new_text[i]=""
+                
+            
+    my_new_text = "".join(my_new_text)
+    words=len(my_new_text.split(" "))
+    characters=len(my_new_text)
+    return my_new_text
+
+
 if __name__ == '__main__':
     app.run(debug=True)
